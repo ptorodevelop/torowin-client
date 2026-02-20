@@ -59,6 +59,9 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "allowedHosts": ["unchromed-lymphocytotic-edda.ngrok-free.dev"]
+          },
           "configurations": {
             "production": {
               "buildTarget": "torowin-client:build:production"

@@ -1,0 +1,43 @@
+.ticket {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+  background: white;
+  user-select: none;
+  font-size: 0.875rem;
+}
+
+.ticket:hover:not(.reserved) {
+  transform: scale(1.05);
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.ticket.selected {
+  background-color: #2563eb;
+  border-color: #1e40af;
+  color: white;
+}
+
+.ticket.reserved {
+  background-color: #f1f5f9;
+  color: #cbd5e1;
+  cursor: not-allowed;
+  text-decoration: line-through;
+  border-style: dashed;
+}
+
+.input-base {
+  @apply w-full bg-slate-50 rounded-2xl px-5 py-3.5 text-sm font-semibold
+         focus:ring-2 focus:ring-blue-500 outline-none border border-transparent;
+}
+
+.input-error {
+  @apply border-red-500 ring-1 ring-red-500;
+}

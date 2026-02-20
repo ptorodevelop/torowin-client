@@ -1,0 +1,136 @@
+@if (raffle()) {
+
+  <div class="space-y-3">
+
+    <!-- Banner informativo compacto -->
+    <div class="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-4 py-2 rounded-xl flex flex-col md:flex-row items-center justify-between gap-2 shadow">
+
+      <div class="flex items-center gap-2">
+        <span class="text-lg">📢</span>
+        <div class="leading-tight">
+          <p class="font-bold text-sm">
+            {{ raffle()?.description }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Contador -->
+      <div class="text-xs font-black bg-white/15 px-3 py-1.5 rounded-lg border border-white/20 tabular-nums">
+        {{ raffle()?.draw_at }}
+      </div>
+
+    </div>
+
+    <!-- TARJETA PRINCIPAL COMPACTA -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex flex-col md:flex-row gap-5">
+
+      <!-- Imagen -->
+      <div class="w-full md:w-1/3 rounded-xl bg-slate-50 aspect-square flex items-center justify-center border border-slate-200 overflow-hidden">
+
+        <img
+          *ngIf="raffle()?.image_path"
+          [src]="raffle()?.image_path"
+          class="w-full h-full object-cover"
+        />
+
+        <span
+          *ngIf="!raffle()?.image_path"
+          class="text-slate-400 text-xs font-semibold"
+        >
+          Sin imagen
+        </span>
+
+      </div>
+
+      <!-- Información -->
+      <div class="flex-1 flex flex-col justify-between space-y-3">
+
+        <!-- Título -->
+        <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight">
+          {{ raffle()?.name }}
+        </h1>
+
+        <!-- Datos -->
+        <div class="grid grid-cols-2 gap-3">
+
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <p class="text-[9px] text-slate-400 uppercase font-black mb-0.5">
+              Costo
+            </p>
+            <p class="text-lg font-extrabold text-blue-600">
+              $ {{ raffle()?.ticket_price | number }}
+            </p>
+          </div>
+
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <p class="text-[9px] text-slate-400 uppercase font-black mb-0.5">
+              Sorteo
+            </p>
+            <p class="text-sm font-extrabold text-slate-800">
+              {{ raffle()?.draw_at | date:'mediumDate' }}
+            </p>
+          </div>
+
+        </div>
+
+        <!-- Cómo participar -->
+        <div class="bg-white border border-slate-200 rounded-2xl px-6 py-4 shadow-sm">
+
+          <h3 class="text-xs font-black text-slate-700 mb-3 uppercase tracking-wide">
+            ¿Cómo participar?
+          </h3>
+
+          <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600 font-semibold">
+
+            <span class="flex items-center gap-2">
+              <span class="bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-md font-black">
+                1
+              </span>
+              Selecciona tus números
+            </span>
+
+            <span class="flex items-center gap-2">
+              <span class="bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-md font-black">
+                2
+              </span>
+              Reserva y paga en línea
+            </span>
+
+            <span class="flex items-center gap-2">
+              <span class="bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-md font-black">
+                3
+              </span>
+              Recibe confirmación automática
+            </span>
+
+          </div>
+
+        </div>
+
+        <!-- Progreso -->
+        <div class="space-y-1.5">
+
+          <!-- textos -->
+          <div class="flex justify-between text-xs font-extrabold tracking-tight">
+            <span class="text-slate-500">Vendido</span>
+            <span class="text-blue-600">
+              {{ raffle()?.sold_percentage }}%
+            </span>
+          </div>
+
+          <!-- barra -->
+          <div class="h-2.5 bg-slate-200 rounded-full overflow-hidden">
+            <div
+              class="h-full bg-gradient-to-r from-blue-600 to-blue-500 transition-all duration-500"
+              [style.width.%]="raffle()?.sold_percentage"
+            ></div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+}

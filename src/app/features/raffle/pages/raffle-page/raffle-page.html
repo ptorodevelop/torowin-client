@@ -1,0 +1,266 @@
+<!-- NAVBAR -->
+<nav class="bg-white shadow-sm border-b sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+    <span class="font-black text-xl">RIFAS<span class="text-blue-600">RISARALDA</span></span>
+    <span class="text-xs text-green-600 font-bold">Sorteo en vivo</span>
+  </div>
+</nav>
+
+<!-- CONTENIDO -->
+<main class="max-w-7xl mx-auto px-4 py-8">
+
+  <app-raffle-hero></app-raffle-hero>
+
+   <!-- Buscador y Filtros -->
+        <div class="sticky top-20 bg-slate-50/80 backdrop-blur-md py-4 z-40">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="relative w-full md:w-96">
+                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input
+                      type="text"
+                      placeholder="¿Buscas un número especial? Ej: 07"
+                      class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                      [value]="searchTerm()"
+                      (input)="onSearch($event)"
+                    />
+                </div>
+                <div class="flex gap-2 w-full md:w-auto overflow-x-auto no-scrollbar pb-1">
+
+  <button
+    (click)="setFilter('all')"
+    [ngClass]="filterStatus() === 'all'
+      ? 'bg-blue-600 text-white shadow-md scale-105'
+      : 'bg-white text-slate-600 hover:bg-blue-50 hover:text-blue-600'"
+    class="whitespace-nowrap px-5 py-2.5 border border-slate-200 rounded-xl text-sm font-semibold transition-all duration-200 ease-out">
+    Todos
+  </button>
+
+  <button
+    (click)="setFilter('available')"
+    [ngClass]="filterStatus() === 'available'
+      ? 'bg-blue-600 text-white shadow-md scale-105'
+      : 'bg-white text-slate-600 hover:bg-blue-50 hover:text-blue-600'"
+    class="whitespace-nowrap px-5 py-2.5 border border-slate-200 rounded-xl text-sm font-semibold transition-all duration-200 ease-out">
+    Disponibles
+  </button>
+
+  <button
+    (click)="setFilter('occupied')"
+    [ngClass]="filterStatus() === 'occupied'
+      ? 'bg-blue-600 text-white shadow-md scale-105'
+      : 'bg-white text-slate-600 hover:bg-blue-50 hover:text-blue-600'"
+    class="whitespace-nowrap px-5 py-2.5 border border-slate-200 rounded-xl text-sm font-semibold transition-all duration-200 ease-out">
+    Ocupados
+  </button>
+
+</div>
+
+            </div>
+        </div>
+
+  <!-- GRID DE TICKETS -->
+  <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-3 sm:gap-4 mt-4 mb-32">
+
+  @for (t of filteredTickets(); track t.id) {
+    <div
+      class="ticket"
+      [class.reserved]="t.status !== 'available'"
+      [class.selected]="selectedTickets.has(+t.number)"
+      (click)="toggleTicket(t)"
+    >
+      {{ t.number ?? t.number }}
+    </div>
+  }
+
+</div>
+
+  @if (selectedTickets.size > 0) {
+  <div class="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-2xl border-t p-6 z-50">
+
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+
+      <!-- seleccionados -->
+      <div class="flex-1 w-full">
+        <p class="text-[10px] text-slate-400 uppercase font-black tracking-[0.2em] mb-3">
+          Números seleccionados:
+        </p>
+
+        <div class="flex gap-2 flex-wrap max-h-16 overflow-y-auto">
+          @for (ticket of selectedTickets.values(); track ticket.id) {
+            <span class="bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-black">
+              {{ ticket.number }}
+            </span>
+          }
+        </div>
+      </div>
+
+      <!-- total + botón -->
+      <div class="flex items-center gap-8">
+        <div>
+          <span class="text-xs text-slate-500 block uppercase font-black mb-1">
+            Total a Pagar
+          </span>
+          <span class="text-3xl font-black text-slate-900">
+            $ {{ totalPrice | number }}
+          </span>
+        </div>
+
+        <button
+          (click)="openModal()"
+          class="bg-blue-600 text-white px-12 py-5 rounded-[2rem] font-black hover:bg-blue-700">
+          RESERVAR AHORA →
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
+
+@if (isModalOpen) {
+  <div class="fixed inset-0 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4 z-[100]">
+
+    <div class="bg-white rounded-[3rem] p-8 md:p-10 max-w-lg w-full shadow-2xl relative overflow-hidden">
+
+      <!-- barra superior -->
+      <div class="absolute top-0 left-0 w-full h-2 bg-blue-600"></div>
+
+      <!-- cerrar -->
+      <button
+        (click)="closeModal()"
+        class="absolute top-8 right-8 text-slate-400 hover:text-slate-600">
+        ✕
+      </button>
+
+      <!-- título -->
+      <div class="mb-6">
+        <h2 class="text-3xl font-black text-slate-900 mb-2">
+          Finalizar Reserva
+        </h2>
+        <p class="text-sm text-slate-500 italic">
+          Ingresa tus datos para confirmar tus números.
+        </p>
+      </div>
+
+      <!-- FORMULARIO REAL -->
+      <form [formGroup]="form" (ngSubmit)="handleCheckout($event)" class="space-y-4">
+
+        <!-- nombre -->
+        <div class="space-y-1.5">
+                    <label class="text-[10px] font-black text-slate-500 uppercase">
+                      Nombre Completo
+                    </label>
+                    <input
+            type="text"
+            formControlName="name"
+            class="w-full bg-slate-50 rounded-2xl px-5 py-3.5 text-sm font-semibold outline-none"
+            [class.border-red-500]="isInvalid('name')"
+          />
+
+          @if (isInvalid('name')) {
+            <p class="text-red-500 text-xs font-semibold mt-1">
+              @if (hasError('name','required')) { El nombre es obligatorio. }
+              @if (hasError('name','minlength')) { Debe tener al menos 3 caracteres. }
+              @if (hasError('name','pattern')) { Solo letras y espacios. }
+            </p>
+          }
+      </div>
+
+          <div class="space-y-1.5">
+      <label class="text-[10px] font-black text-slate-500 uppercase">
+        Documento de Identidad
+      </label>
+
+      <input
+        type="text"
+        formControlName="document"
+        class="w-full bg-slate-50 rounded-2xl px-5 py-3.5 text-sm font-semibold outline-none"
+        [class.border-red-500]="isInvalid('document')"
+      />
+
+      @if (isInvalid('document')) {
+        <p class="text-red-500 text-xs">
+          @if (hasError('document','required')) { El documento es obligatorio. }
+          @if (hasError('document','pattern')) { Solo se permiten números. }
+          @if (hasError('document','minlength')) { Debe tener al menos 6 dígitos. }
+          @if (hasError('document','maxlength')) { Máximo 12 dígitos. }
+        </p>
+      }
+    </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+          <!-- whatsapp -->
+          <div class="space-y-1.5">
+            <label class="text-[10px] font-black text-slate-500 uppercase">
+              WhatsApp
+            </label>
+            <input
+              type="tel"
+              formControlName="phone"
+              class="w-full bg-slate-50 rounded-2xl px-5 py-3.5 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+            @if (isInvalid('phone')) {
+              <p class="text-red-500 text-xs">
+                @if (hasError('phone','required')) { El teléfono es obligatorio. }
+                @if (hasError('phone','pattern')) { Número colombiano inválido. }
+              </p>
+            }
+          </div>
+
+          <!-- email -->
+          <div class="space-y-1.5">
+            <label class="text-[10px] font-black text-slate-500 uppercase">
+              Correo Electrónico
+            </label>
+            <input
+                type="email"
+                formControlName="email"
+                class="w-full bg-slate-50 rounded-2xl px-5 py-3.5 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+              @if (isInvalid('email')) {
+                <p class="text-red-500 text-xs">
+                  @if (hasError('email','required')) { El correo es obligatorio. }
+                  @if (hasError('email','email')) { Correo inválido. }
+                </p>
+              }
+          </div>
+
+        </div>
+
+        <!-- RESUMEN -->
+        <div class="bg-blue-50 p-6 rounded-3xl border border-blue-100 mt-2">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-xs font-black text-blue-800 uppercase">
+              Resumen
+            </span>
+            <span class="text-xs font-black text-blue-600 bg-white px-2 py-1 rounded-md">
+              {{ selectedTickets.size }} Cupos
+            </span>
+          </div>
+
+          <div class="flex justify-between items-end">
+            <div>
+              <p class="text-[10px] text-blue-400 font-bold uppercase mb-1">
+                Total COP
+              </p>
+              <span class="text-3xl font-black text-blue-900">
+                $ {{ totalPrice | number }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- botón -->
+        <button
+          type="submit"
+          class="w-full bg-slate-900 text-white py-5 rounded-[2rem] font-black hover:bg-black">
+          CONFIRMAR DATOS
+        </button>
+
+      </form>
+    </div>
+  </div>
+}
+
+
+</main>
