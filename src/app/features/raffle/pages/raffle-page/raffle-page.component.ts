@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RaffleService } from '../../../../core/services/raffle.service';
 import { RaffleHeroComponent } from '../../components/raffle-hero/raffle-hero';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-raffle-page',
@@ -15,13 +16,14 @@ export class RafflePageComponent implements OnInit {
 
   tickets = signal<any[]>([]);
   searchTerm = signal('');
-  allTickets: any[] = [];
+  allTickets = signal<any[]>([]);
   filterStatus = signal<'all' | 'available' | 'occupied'>('all');
 
   raffleId!: number;
   isModalOpen = false;
   isSuccessOpen = false;
   ticketPrice!: number;
+  isProcessing = false;
 
   private fb = inject(FormBuilder);
 
@@ -64,11 +66,20 @@ export class RafflePageComponent implements OnInit {
     ]
   });
 
-  constructor(private raffleService: RaffleService) {}
+  constructor(
+  private readonly raffleService: RaffleService,
+  private readonly route: ActivatedRoute
+) {}
 
   ngOnInit(): void {
-    this.loadTickets();
-  }
+  this.route.paramMap.subscribe(params => {
+    const id = params.get('id');
+    if (id) {
+      this.raffleId = +id;
+      this.loadTickets();
+    }
+  });
+}
 
   selectedTickets = new Map<number, any>();
 
@@ -89,7 +100,7 @@ toggleTicket(ticket: any) {
     next: (res: any) => {
       this.tickets.set(res.data.tickets);
       this.raffleId = res.data.raffleId;
-      this.allTickets = res.data.tickets;
+      this.allTickets.set(res.data.tickets);
       this.ticketPrice = res.data.ticket_price
     },
     error: (err: any) => {
@@ -113,10 +124,12 @@ toggleTicket(ticket: any) {
   handleCheckout(event: Event) {
   event.preventDefault();
 
-  if (this.form.invalid) {
+  if (this.form.invalid || this.isProcessing) {
     this.form.markAllAsTouched();
     return;
   }
+
+  this.isProcessing = true;
 
   const numbers = Array.from(this.selectedTickets.keys());
 
@@ -150,6 +163,7 @@ toggleTicket(ticket: any) {
   checkout.onErrors((e: any) => {
     console.error("🔴 Error en checkout", e);
     alert("No se pudo iniciar el pago.");
+    this.isProcessing = false;
   });
 
   checkout.onClosed(() => {
@@ -161,6 +175,7 @@ toggleTicket(ticket: any) {
     this.selectedTickets.clear();
     this.form.reset();
     this.loadTickets();
+    this.isProcessing = false;
   });
 
   checkout.open();
@@ -169,6 +184,7 @@ toggleTicket(ticket: any) {
         error: (err) => {
           console.error('Error creando orden', err);
           alert('No se pudo crear la orden.');
+          this.isProcessing = false;
         }
 
       });
@@ -184,6 +200,7 @@ toggleTicket(ticket: any) {
       }
 
       this.loadTickets();
+      this.isProcessing = false;
     }
 
   });
@@ -205,18 +222,17 @@ toggleTicket(ticket: any) {
   this.searchTerm.set(value);
 }
 
-  filteredTickets = computed(() => {
+filteredTickets = computed(() => {
 
   const term = this.searchTerm().trim();
   const status = this.filterStatus();
+  const tickets = this.allTickets(); // 👈 IMPORTANTE
 
-  return this.allTickets.filter(ticket => {
+  return tickets.filter(ticket => {
 
-    // 🔎 Filtro por búsqueda
     const matchesSearch =
       !term || String(ticket.number).includes(term);
 
-    // 🎯 Filtro por estado
     const matchesStatus =
       status === 'all' ||
       (status === 'available' && ticket.status === 'available') ||

@@ -87,6 +87,7 @@ export class PaymentResultComponent implements OnInit {
   });
 
   goHome() {
-    this.router.navigateByUrl('/');
-  }
+  this.router.navigate(['/rifa', this.refId()]);
+}
+
 }
