@@ -48,6 +48,31 @@
             </div>
         </div>
 
+    @if (notification()) {
+        <div class="fixed top-6 right-6 z-[999] animate-notification">
+          <div class="bg-slate-900/90 backdrop-blur-xl text-white px-5 py-4 rounded-[2rem] shadow-2xl shadow-amber-900/20 border border-amber-500/20 flex items-center gap-4 min-w-[300px]">
+
+            <div class="relative shrink-0">
+              <div class="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-500/40 relative z-10">
+                <span class="text-lg">🔥</span>
+              </div>
+              <div class="absolute inset-0 w-10 h-10 bg-amber-500 rounded-full animate-ping opacity-25"></div>
+            </div>
+
+            <div class="flex-1">
+              <p class="text-[10px] uppercase font-black tracking-[0.2em] text-amber-400 mb-0.5 italic">Actividad en vivo</p>
+              <p class="text-sm font-bold leading-tight">{{ notification() }}</p>
+            </div>
+
+            <button (click)="notification.set('')" class="text-white/40 hover:text-white transition-colors p-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      }
+
   <!-- GRID DE TICKETS -->
   <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-3 sm:gap-4 mt-4 mb-32">
 

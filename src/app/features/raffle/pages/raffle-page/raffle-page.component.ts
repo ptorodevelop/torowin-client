@@ -4,6 +4,7 @@ import { RaffleService } from '../../../../core/services/raffle.service';
 import { RaffleHeroComponent } from '../../components/raffle-hero/raffle-hero';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { RealtimeService } from '../../../../core/services/realtime.service';
 
 @Component({
   selector: 'app-raffle-page',
@@ -14,10 +15,12 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class RafflePageComponent implements OnInit {
 
+  private readonly realtime = inject(RealtimeService);
   tickets = signal<any[]>([]);
   searchTerm = signal('');
   allTickets = signal<any[]>([]);
   filterStatus = signal<'all' | 'available' | 'occupied'>('all');
+  notification = signal<string | null>(null);
 
   raffleId!: number;
   isModalOpen = false;
@@ -78,6 +81,20 @@ export class RafflePageComponent implements OnInit {
       this.raffleId = +id;
       this.loadTickets();
     }
+    this.realtime.listenToRaffle(
+      this.raffleId,
+
+      // 🔴 Cuando reservan
+      (event: any) => {
+        this.handleReserved(event);
+      },
+
+      // 🟢 Cuando liberan
+      (event: any) => {
+        this.handleReleased(event);
+      }
+
+    );
   });
 }
 
@@ -247,5 +264,64 @@ setFilter(status: 'all' | 'available' | 'occupied') {
   this.filterStatus.set(status);
    this.searchTerm.set('');
 }
+
+private handleReserved(event: any) {
+
+  const updated = this.allTickets().map(ticket => {
+
+    if (event.numbers.includes(Number(ticket.number))) {
+      return { ...ticket, status: 'reserved' };
+    }
+
+    return ticket;
+  });
+
+  this.allTickets.set(updated);
+
+  const removedNumbers: number[] = [];
+
+  event.numbers.forEach((num: number) => {
+    if (this.selectedTickets.has(num)) {
+      this.selectedTickets.delete(num);
+      removedNumbers.push(num);
+    }
+  });
+
+  if (removedNumbers.length > 0) {
+
+    if (removedNumbers.length === 1) {
+      this.notification.set(
+        `El número ${removedNumbers[0]} fue reservado por otro participante.`
+      );
+    } else {
+      this.notification.set(
+        `Los números ${removedNumbers.join(', ')} fueron reservados por otros participantes.`
+      );
+    }
+
+    setTimeout(() => {
+      this.notification.set(null);
+    }, 10000);
+  }
+
+}
+
+private handleReleased(event: any) {
+
+  console.log('Liberado →', event);
+
+  const updated = this.allTickets().map(ticket => {
+
+    if (event.numbers.includes(Number(ticket.number))) {
+      return { ...ticket, status: 'available' };
+    }
+
+    return ticket;
+  });
+
+  this.allTickets.set(updated);
+
+}
+
 
 }
