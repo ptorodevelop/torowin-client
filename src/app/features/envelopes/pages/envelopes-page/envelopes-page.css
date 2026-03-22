@@ -1,0 +1,58 @@
+.hero-gradient {
+  background: radial-gradient(circle at top right, #f5f3ff, transparent),
+              radial-gradient(circle at bottom left, #eff6ff, transparent);
+}
+
+.envelope-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 32px;
+  transition: all 0.5s cubic-bezier(0.175,0.885,0.32,1.275);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.envelope-card:hover {
+  transform: translateY(-15px) scale(1.02);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+}
+
+.floating-badge {
+  animation: float 3s ease-in-out infinite;
+}
+
+.bg-gradient-gold {
+  background: linear-gradient(135deg,#bf953f,#fcf6ba,#b38728,#fbf5b7,#aa771c);
+}
+
+.bg-gradient-indigo {
+  background: linear-gradient(135deg,#818cf8,#6366f1,#4338ca);
+}
+
+.bg-gradient-emerald {
+  background: linear-gradient(135deg,#34d399,#10b981,#059669);
+}
+
+.badge-limited {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.envelope-card {
+  animation: fadeUp .6s ease;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity:0;
+    transform:translateY(40px);
+  }
+  to {
+    opacity:1;
+    transform:translateY(0);
+  }
+}

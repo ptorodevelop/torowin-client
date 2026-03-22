@@ -1,0 +1,95 @@
+<section id="inicio" class="hero-gradient pt-20 pb-32 px-6" *ngIf="landing">
+
+<div class="max-w-4xl mx-auto text-center">
+
+<div class="inline-flex items-center gap-2 bg-white border border-slate-200 px-4 py-2 rounded-full mb-8 shadow-sm floating-badge">
+
+<span class="flex h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
+
+<span class="text-[11px] font-black uppercase tracking-widest text-slate-600">
+{{ landing.badge_text }}
+</span>
+
+
+</div>
+
+<h1 class="text-5xl md:text-7xl font-black text-slate-900 leading-[1.1] mb-8 tracking-tighter">
+{{ landing.hero_title }}
+</h1>
+
+<p class="text-lg text-slate-500 max-w-2xl mx-auto mb-12 leading-relaxed font-light">
+{{ landing.hero_description }}
+</p>
+
+<a
+(click)="showEnvelopes()"
+class="bg-indigo-600 text-white px-10 py-5 rounded-2xl font-black text-lg hover:bg-indigo-700 transition-all shadow-2xl shadow-indigo-300/40 inline-block active:scale-95">
+
+{{ landing.hero_button_text }}
+
+</a>
+
+</div>
+
+</section>
+
+<section id="colecciones" *ngIf="showCollections" class="py-24 px-6">
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+
+  <div
+  *ngFor="let pack of envelopes"
+  (click)="selectEnvelope(pack)"
+  tabindex="0"
+  class="envelope-card group shadow-2xl cursor-pointer"
+  [ngClass]="getGradientClass(pack.color)"
+  >
+
+
+<div class="p-10">
+
+<div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mb-8">
+
+<i class="fa-solid {{pack.icon}} text-white text-3xl"></i>
+
+</div>
+
+<h3 class="text-white text-4xl font-black mb-4 tracking-tighter">
+{{pack.name}}
+</h3>
+
+<ul class="text-white/70 text-base mb-12 font-medium leading-snug">
+
+<li *ngFor="let benefit of pack.benefits">
+
+<i class="fa-solid fa-circle-check mr-2"></i>
+
+{{benefit}}
+
+</li>
+
+</ul>
+
+<div class="flex justify-between items-center">
+
+<span class="text-white text-2xl font-black">
+
+$ {{pack.price}}
+
+</span>
+
+<span class="text-white font-bold text-xs uppercase">
+
+Seleccionar →
+
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
