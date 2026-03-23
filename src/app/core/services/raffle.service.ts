@@ -49,4 +49,11 @@ export class RaffleService {
     );
   }
 
+    generateRandomTickets(quantity: number) {
+    return this.http.post<any>(
+      `${this.api}/public/raffles/tickets/generate-random`,
+      { quantity }
+    );
+  }
+
 }

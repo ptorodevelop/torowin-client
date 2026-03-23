@@ -1,0 +1,103 @@
+.roulette-slot {
+  width: 110px;
+  height: 120px;
+ background: linear-gradient(
+  145deg,
+  rgba(15, 23, 42, 0.95),
+  rgba(49, 46, 129, 0.7)
+);
+
+border: 1px solid rgba(148, 163, 184, 0.15);
+
+box-shadow:
+  inset 0 1px 2px rgba(255,255,255,0.05),
+  0 10px 30px rgba(0,0,0,0.4);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.roulette-slot:hover {
+  transform: translateY(-5px) scale(1.05);
+}
+
+.roulette-slot.locked {
+  border-color: #fbbf24;
+  background: rgba(251, 191, 36, 0.15);
+  box-shadow: 0 0 25px rgba(251, 191, 36, 0.3);
+}
+
+.slot-number {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: white;
+}
+
+.roulette-slot.locked .slot-number {
+  color: #fbbf24;
+}
+
+.lock-btn {
+  position: absolute;
+  bottom: 8px;
+  font-size: 9px;
+  color: #fbbf24;
+  opacity: 0;
+  transition: 0.3s;
+}
+
+.roulette-slot:hover .lock-btn,
+.roulette-slot.locked .lock-btn {
+  opacity: 1;
+}
+
+.btn-premium {
+  background: linear-gradient(to right, #6366f1, #a855f7);
+  transition: all 0.3s;
+}
+
+.btn-premium:hover {
+  box-shadow: 0 0 40px rgba(99, 102, 241, 0.4);
+  transform: translateY(-2px);
+}
+
+.roulette-slot {
+  width: 110px;
+  height: 120px;
+  overflow: hidden;
+  position: relative;
+  border-radius: 20px;
+}
+
+.slot-strip {
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.slot-number {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  font-weight: 900;
+}
+
+.roulette-slot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: linear-gradient(
+    120deg,
+    rgba(255,255,255,0.12),
+    transparent 40%
+  );
+  opacity: 0.25;
+  pointer-events: none;
+}

@@ -2,18 +2,22 @@ import { Component, OnInit, inject, signal, effect, computed } from '@angular/co
 import { CommonModule } from '@angular/common';
 import { RaffleService } from '../../../../core/services/raffle.service';
 import { RaffleHeroComponent } from '../../components/raffle-hero/raffle-hero';
+import { RandomGeneratorComponent } from '../../components/random-generator/random-generator';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { RealtimeService } from '../../../../core/services/realtime.service';
+import { ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-raffle-page',
    standalone: true,
-  imports: [CommonModule, RaffleHeroComponent, ReactiveFormsModule],
+  imports: [CommonModule, RaffleHeroComponent, ReactiveFormsModule, RandomGeneratorComponent],
   templateUrl: './raffle-page.html',
   styleUrls: ['./raffle-page.css']
 })
 export class RafflePageComponent implements OnInit {
+
+  selectedEnvelopeId = signal<number | null>(null);
 
   private readonly realtime = inject(RealtimeService);
   tickets = signal<any[]>([]);
@@ -21,6 +25,9 @@ export class RafflePageComponent implements OnInit {
   allTickets = signal<any[]>([]);
   filterStatus = signal<'all' | 'available' | 'occupied'>('all');
   notification = signal<string | null>(null);
+  mode = signal<'manual' | 'random'>('manual');
+  @ViewChild(RandomGeneratorComponent)
+  randomComponent?: RandomGeneratorComponent;
 
   raffleId!: number;
   isModalOpen = false;
@@ -29,6 +36,16 @@ export class RafflePageComponent implements OnInit {
   isProcessing = false;
 
   private fb = inject(FormBuilder);
+
+  setManualMode() {
+  this.mode.set('manual');
+  this.selectedTickets.clear();
+}
+
+setRandomMode() {
+  this.mode.set('random');
+  this.selectedTickets.clear();
+}
 
  form = this.fb.group({
     name: [
@@ -75,6 +92,9 @@ export class RafflePageComponent implements OnInit {
 ) {}
 
   ngOnInit(): void {
+  const envelopeId = this.route.snapshot.paramMap.get('id');
+  this.selectedEnvelopeId.set(Number(envelopeId));
+
   this.route.paramMap.subscribe(params => {
     const id = params.get('id');
     if (id) {
@@ -84,12 +104,12 @@ export class RafflePageComponent implements OnInit {
     this.realtime.listenToRaffle(
       this.raffleId,
 
-      // 🔴 Cuando reservan
+      // Cuando reservan
       (event: any) => {
         this.handleReserved(event);
       },
 
-      // 🟢 Cuando liberan
+      // Cuando liberan
       (event: any) => {
         this.handleReleased(event);
       }
@@ -156,6 +176,7 @@ toggleTicket(ticket: any) {
       const reservationToken = reserveRes.data.reservation_token;
       this.raffleService.createOrder({
         reservation_token: reservationToken,
+        envelope_id: this.selectedEnvelopeId(),
         buyer: this.form.value
       }).subscribe({
 
@@ -281,14 +302,35 @@ private handleReserved(event: any) {
   const removedNumbers: number[] = [];
 
   event.numbers.forEach((num: number) => {
-    if (this.selectedTickets.has(num)) {
-      this.selectedTickets.delete(num);
-      removedNumbers.push(num);
+
+  let wasSelected = false;
+
+  // 🔹 modo manual
+  if (this.selectedTickets.has(num)) {
+    this.selectedTickets.delete(num);
+    wasSelected = true;
+  }
+
+  if (this.mode() === 'random' && this.randomComponent) {
+
+    const existsInSlots = this.randomComponent.slots()
+          .some(s => {
+            const value = s.finalNumber ?? s.sequence[s.sequence.length - 1];
+            return Number(value) === num;
+          });
+
+    if (existsInSlots) {
+      wasSelected = true;
     }
-  });
+  }
+
+  if (wasSelected) {
+    removedNumbers.push(num);
+  }
+
+});
 
   if (removedNumbers.length > 0) {
-
     if (removedNumbers.length === 1) {
       this.notification.set(
         `El número ${removedNumbers[0]} fue reservado por otro participante.`
@@ -302,6 +344,10 @@ private handleReserved(event: any) {
     setTimeout(() => {
       this.notification.set(null);
     }, 10000);
+  }
+
+    if (this.mode() === 'random' && this.randomComponent) {
+    this.randomComponent.handleExternalReserved(event.numbers);
   }
 
 }
@@ -321,6 +367,22 @@ private handleReleased(event: any) {
 
   this.allTickets.set(updated);
 
+}
+
+handleRandomSelection(numbers: number[]) {
+
+  this.selectedTickets.clear();
+
+  numbers.forEach(num => {
+
+    const ticket = this.allTickets()
+      .find(t => Number(t.number) === num);
+
+    if (ticket && ticket.status === 'available') {
+      this.selectedTickets.set(num, ticket);
+    }
+
+  });
 }
 
 

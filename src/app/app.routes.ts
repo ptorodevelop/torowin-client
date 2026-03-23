@@ -12,7 +12,7 @@ export const routes: Routes = [
   },
 
   {
-    path: 'rifa/:id',
+    path: 'sobre/:id',
     component: RafflePageComponent,
   },
 

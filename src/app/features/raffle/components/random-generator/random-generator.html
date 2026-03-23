@@ -1,0 +1,95 @@
+<div class="max-w-4xl mx-auto bg-slate-900/40 border border-white/5 rounded-[3rem] p-8 md:p-12 text-center">
+
+  <!-- Título -->
+  <h2 class="text-2xl font-black mb-8 tracking-tight uppercase">
+    Generador de Fortuna <span class="text-yellow-500">000-999</span>
+  </h2>
+
+  <div class="flex flex-col items-center gap-10">
+
+    <!-- 🔢 Cantidad -->
+    <div class="flex items-center gap-4 bg-black/30 p-2 rounded-2xl border border-white/5">
+      <button
+        (click)="changeCount(-1)"
+        class="w-10 h-10 rounded-xl hover:bg-white/5 text-slate-400 font-bold transition"
+      >
+        -
+      </button>
+
+      <span class="w-24 text-[10px] font-black uppercase tracking-widest text-indigo-300">
+        {{ slotCount() }} número{{ slotCount() > 1 ? 's' : '' }}
+      </span>
+
+      <button
+        (click)="changeCount(1)"
+        class="w-10 h-10 rounded-xl hover:bg-white/5 text-slate-400 font-bold transition"
+      >
+        +
+      </button>
+    </div>
+
+    <!-- 🎰 Slots -->
+    <div class="flex gap-4 justify-center flex-wrap perspective-1000">
+
+      @for (slot of slots(); track slot.id) {
+
+        <div
+          (click)="toggleLock(slot.id)"
+          class="roulette-slot"
+          [ngClass]="{ 'locked': slot.locked }"
+        >
+
+          <!-- STRIP -->
+          <div
+            class="slot-strip"
+            [style.transform]="slot.transform"
+            [style.transition]="slot.transition"
+          >
+            @for (n of slot.sequence; track $index) {
+              <div class="slot-number">
+                {{ n }}
+              </div>
+            }
+          </div>
+
+          <!-- LOCK -->
+          <div class="lock-btn">
+            @if (slot.locked) {
+              <span><i class="fa-solid fa-lock"></i> FIJADO</span>
+            } @else {
+              <span><i class="fa-solid fa-lock-open"></i> FIJAR</span>
+            }
+          </div>
+
+        </div>
+
+      } <!-- 🔥 ESTE CIERRE TE FALTABA -->
+
+    </div>
+
+    <!-- 🎯 Botones -->
+    <div class="flex flex-col sm:flex-row gap-4 mt-4 w-full justify-center">
+
+      <button
+        (click)="spin()"
+        class="px-12 py-5 btn-premium text-white rounded-2xl font-black text-sm uppercase tracking-widest"
+      >
+        <i class="fa-solid fa-rotate mr-2"></i>
+        Girar Fortuna
+      </button>
+
+      <button
+        (click)="resetLocks()"
+        class="px-8 py-5 bg-slate-800/80 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-700 transition"
+      >
+        Reiniciar Bloqueos
+      </button>
+
+    </div>
+
+    <p class="text-[9px] text-slate-500 uppercase tracking-widest font-black opacity-60">
+      Toca un número para fijarlo 🔒
+    </p>
+
+  </div>
+</div>

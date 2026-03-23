@@ -22,7 +22,7 @@ export class RaffleHeroComponent implements OnInit {
   private loadActiveRaffle() {
      this.raffleService.getActiveRaffle().subscribe({
       next: (res: any) => this.raffle.set(res.data),
-      error: (err) => console.error('Error cargando rifa activa', err)
+      error: (err) => console.error('Error cargando sobre activo', err)
     });
   }
 

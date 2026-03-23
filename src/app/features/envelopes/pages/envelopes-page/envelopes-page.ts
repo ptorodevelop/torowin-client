@@ -53,7 +53,7 @@ export class EnvelopesPage implements OnInit {
 
   selectEnvelope(pack: Envelope) {
 
-    this.router.navigate(['/rifa', pack.id]);
+    this.router.navigate(['/sobre', pack.id]);
 
   }
 
