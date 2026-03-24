@@ -1,41 +1,59 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterLink  } from '@angular/router';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { LegalService } from '../../../core/services/legal.service';
 import { marked } from 'marked';
 import { CommonModule } from '@angular/common';
+import { switchMap } from 'rxjs/operators';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-legal-page',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterModule],
   templateUrl: './legal-page.html'
 })
 export class LegalPage implements OnInit {
 
-  page: any;
+  page: any = null;
+  loading = true;
+  htmlContent!: SafeHtml;
 
   constructor(
     private readonly route: ActivatedRoute,
-    private  readonly legalService: LegalService
+    private readonly legalService: LegalService,
+    private readonly cdr: ChangeDetectorRef,
+    private readonly router: Router,
+    private readonly sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
+    this.route.paramMap
+      .pipe(
+        switchMap(params => {
+          const slug = params.get('slug');
+          this.loading = true;
+          return this.legalService.getPage(slug!);
+        })
+      )
+      .subscribe({
+        next: (res: any) => {
+          this.page = res.data;
 
-  this.route.paramMap.subscribe(params => {
+          const rawHtml = marked.parse(this.page.content) as string;
+          this.htmlContent = this.sanitizer.bypassSecurityTrustHtml(rawHtml);
 
-    const slug = params.get('slug');
-
-    if (slug) {
-      this.legalService.getPage(slug).subscribe((res:any)=>{
-        this.page = res.data;
+          this.loading = false;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.page = null;
+          this.loading = false;
+          this.cdr.detectChanges();
+        }
       });
-    }
+  }
 
-  });
-
-}
-
-  get htmlContent() {
-    return this.page ? marked.parse(this.page.content) : '';
+  goHome() {
+    window.location.href = '/';
   }
 }

@@ -1,35 +1,38 @@
-<main class="bg-slate py-12 px-6 animate-in fade-in duration-500" *ngIf="page">
+<main class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 py-16 px-6 animate-in fade-in duration-500" *ngIf="page">
 
   <div class="max-w-4xl mx-auto">
 
     <!-- botón volver -->
     <button
-      routerLink="/"
-      class="mb-8 text-slate-500 text-[10px] font-black uppercase tracking-widest hover:text-slate-800 transition flex items-center gap-2">
-      <i class="fa-solid fa-arrow-left"></i>
+      (click)="goHome()"
+      class="group mb-10 text-slate-400 text-[10px] font-black uppercase tracking-widest hover:text-white transition flex items-center gap-2"
+    >
+      <i class="fa-solid fa-arrow-left group-hover:-translate-x-1 transition"></i>
       Volver al Portal
     </button>
 
     <!-- documento -->
-    <div class="bg-white border border-slate-200 rounded-3xl p-10 shadow-xl">
+    <div class="relative bg-white/95 backdrop-blur-xl border border-white/20 rounded-[2.5rem] p-10 shadow-[0_40px_120px_rgba(0,0,0,0.6)] overflow-hidden">
 
-      <!-- header legal -->
-      <header class="flex justify-between items-start mb-10 border-b border-slate-100 pb-6">
+      <!-- glow sutil -->
+      <div class="absolute -top-20 -right-20 w-60 h-60 bg-indigo-500/10 blur-3xl rounded-full"></div>
+
+      <!-- header -->
+      <header class="flex justify-between items-start mb-12 border-b border-slate-100 pb-6">
 
         <div>
-          <h3 class="text-xl font-black tracking-tight uppercase m-0">
+          <h3 class="text-2xl font-black tracking-tight text-slate-900">
             Sobre de Fortuna Digital
           </h3>
 
-          <p class="text-[9px] font-bold text-slate-400 tracking-[0.3em] uppercase mt-1">
+          <p class="text-[10px] font-bold text-slate-400 tracking-[0.35em] uppercase mt-2">
             Legal & Compliance Office
           </p>
         </div>
 
         <div class="text-right">
-          <div
-            class="text-[9px] font-black bg-slate-100 px-3 py-1 rounded border border-slate-200 text-slate-500">
-            OFICIAL / VERIFICADO
+          <div class="text-[9px] font-black bg-gradient-to-r from-slate-100 to-slate-200 px-4 py-1 rounded-full border border-slate-200 text-slate-600 shadow-sm">
+            ✔ Verificado
           </div>
 
           <p class="text-[9px] text-slate-400 font-bold mt-2 tracking-widest">
@@ -40,29 +43,37 @@
       </header>
 
       <!-- título -->
-      <h1 class="text-4xl md:text-5xl font-black text-slate-900 mb-10 tracking-tight leading-none font-serif">
+      <h1 class="text-5xl md:text-6xl font-black text-slate-900 mb-12 tracking-tight leading-[1.05] font-serif">
         {{ page.title }}
       </h1>
 
-      <!-- contenido markdown -->
+      <!-- contenido -->
       <div
-        class="prose prose-slate max-w-none prose-headings:font-black prose-h2:text-xl prose-h3:text-lg"
+        class="prose prose-slate max-w-none
+               prose-headings:font-black
+               prose-h2:text-2xl
+               prose-h3:text-xl
+               prose-p:text-slate-600
+               prose-li:text-slate-600
+               prose-strong:text-slate-900
+               prose-a:text-indigo-600
+               prose-a:no-underline hover:prose-a:underline
+               prose-blockquote:border-l-indigo-500
+               prose-blockquote:text-slate-600"
         [innerHTML]="htmlContent">
       </div>
 
-      <!-- footer documento -->
-      <footer class="mt-20 pt-10 border-t border-slate-100 flex justify-between items-center">
+      <!-- footer -->
+      <footer class="mt-24 pt-10 border-t border-slate-100 flex justify-between items-end">
 
-        <div class="text-[9px] text-slate-400 font-medium max-w-xs">
-          Documento generado electrónicamente por Sobre de Fortuna Digital.
-          Reservados todos los derechos.
+        <div class="text-[10px] text-slate-400 font-medium max-w-xs leading-relaxed">
+          Documento generado electrónicamente por <strong>Sobre de Fortuna Digital</strong>.
+          Este archivo constituye un registro legal válido.
         </div>
 
         <div class="text-right">
-          <div class="w-24 h-px bg-slate-300 ml-auto mb-2"></div>
-          <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">
-            Firma Autorizada
-          </p>
+          <div class="w-28 h-[2px] bg-gradient-to-r from-transparent via-slate-400 to-transparent ml-auto mb-3"></div>
+
         </div>
 
       </footer>
