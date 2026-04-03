@@ -264,7 +264,7 @@ filteredTickets = computed(() => {
 
   const term = this.searchTerm().trim();
   const status = this.filterStatus();
-  const tickets = this.allTickets(); // 👈 IMPORTANTE
+  const tickets = this.allTickets();
 
   return tickets.filter(ticket => {
 

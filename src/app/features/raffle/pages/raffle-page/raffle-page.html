@@ -60,6 +60,7 @@
 
   @if (mode() === 'random') {
     <app-random-generator
+      [maxNumber]="allTickets().length"
       (numbersGenerated)="handleRandomSelection($event)">
     </app-random-generator>
   }
