@@ -184,39 +184,34 @@ toggleTicket(ticket: any) {
 
   console.log('ORDER RESPONSE →', orderRes);
 
-  const sessionId = orderRes.data.sessionId;
+  const wompiWidget = orderRes.data.wompi_widget;
 
   this.isModalOpen = false;
 
-  const checkout = (window as any).ePayco.checkout.configure({
-    sessionId: sessionId,
-    type: "onpage",
-    test: true
-  });
+  if (wompiWidget) {
+    console.log("Enviando exacto esto a Wompi:", wompiWidget);
+    const checkout = new (window as any).WidgetCheckout(wompiWidget);
 
-  checkout.onCreated(() => {
-    console.log("🟢 Checkout abierto");
-  });
+    checkout.open((result: any) => {
+      console.log("🟡 Checkout cerrado", result);
 
-  checkout.onErrors((e: any) => {
-    console.error("🔴 Error en checkout", e);
-    alert("No se pudo iniciar el pago.");
+      if (result && result.transaction) {
+          console.log('ID Transacción: ', result.transaction.id);
+      }
+
+      // ⚠️ AÚN NO sabemos si pagó efectivamente.
+      // El webhook lo confirmará
+
+      this.selectedTickets.clear();
+      this.form.reset();
+      this.loadTickets();
+      this.isProcessing = false;
+    });
+  } else {
+    console.error("Falta la configuración de Wompi Widget en la respuesta");
+    alert("No se pudo iniciar el pago, configuración faltante.");
     this.isProcessing = false;
-  });
-
-  checkout.onClosed(() => {
-    console.log("🟡 Checkout cerrado");
-
-    // ⚠️ AÚN NO sabemos si pagó
-    // El webhook lo confirmará
-
-    this.selectedTickets.clear();
-    this.form.reset();
-    this.loadTickets();
-    this.isProcessing = false;
-  });
-
-  checkout.open();
+  }
 },
 
         error: (err) => {
