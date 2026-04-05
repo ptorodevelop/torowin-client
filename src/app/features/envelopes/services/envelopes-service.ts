@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { Observable } from 'rxjs'
+import { environment } from '../../../../environments/environment'
 import { Envelope } from '../models/envelope'
 import { Landing } from '../models/landing'
 
@@ -9,7 +10,7 @@ import { Landing } from '../models/landing'
 })
 export class EnvelopesService {
 
-  private readonly api = 'http://127.0.0.1:8000/api/sobre-fortuna-digital'
+  private readonly api = `${environment.apiUrl}/sobre-fortuna-digital`
 
   constructor(private readonly http: HttpClient) {}
 

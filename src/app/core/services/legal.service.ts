@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface LegalPage {
   id: number;
@@ -14,7 +15,7 @@ export interface LegalPage {
 })
 export class LegalService {
 
-  private readonly api = 'http://127.0.0.1:8000/api/sobre-fortuna-digital/legal';
+  private readonly api = `${environment.apiUrl}/sobre-fortuna-digital/legal`;
 
   constructor(private readonly http: HttpClient) {}
 
