@@ -87,7 +87,7 @@ export class PaymentResultComponent implements OnInit {
   });
 
   goHome() {
-  this.router.navigate(['/sobre', this.refId()]);
+  window.location.href = '/';
 }
 
 }
