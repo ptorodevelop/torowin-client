@@ -99,23 +99,8 @@ setRandomMode() {
   this.route.paramMap.subscribe(params => {
     const id = params.get('id');
     if (id) {
-      this.raffleId = +id;
       this.loadTickets();
     }
-    this.realtime.listenToRaffle(
-      this.raffleId,
-
-      // Cuando reservan
-      (event: any) => {
-        this.handleReserved(event);
-      },
-
-      // Cuando liberan
-      (event: any) => {
-        this.handleReleased(event);
-      }
-
-    );
   });
 }
 
@@ -137,9 +122,18 @@ toggleTicket(ticket: any) {
   this.raffleService.getTickets().subscribe({
     next: (res: any) => {
       this.tickets.set(res.data.tickets);
-      this.raffleId = res.data.raffleId;
       this.allTickets.set(res.data.tickets);
-      this.ticketPrice = res.data.ticket_price
+      this.ticketPrice = res.data.ticket_price;
+
+      const incomingRaffleId = res.data.raffleId;
+      if (incomingRaffleId && incomingRaffleId !== this.raffleId) {
+        this.raffleId = incomingRaffleId;
+        this.realtime.listenToRaffle(
+          this.raffleId,
+          (event: any) => this.handleReserved(event),
+          (event: any) => this.handleReleased(event),
+        );
+      }
     },
     error: (err: any) => {
       console.error('Error cargando tickets', err);
