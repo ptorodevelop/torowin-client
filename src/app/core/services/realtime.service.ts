@@ -22,6 +22,8 @@ export class RealtimeService {
 
       const { key, wsHost, wsPort, wssPort, forceTLS } = environment.reverb;
 
+      console.log('[Reverb] Inicializando Echo', { key, wsHost, wsPort, forceTLS });
+
       this.echo = new Echo<'reverb'>({
         broadcaster: 'reverb',
         key,
@@ -31,6 +33,8 @@ export class RealtimeService {
         forceTLS,
         enabledTransports: forceTLS ? ['wss'] : ['ws'],
       });
+
+      console.log('[Reverb] Echo creado', this.echo);
 
     }
   }
