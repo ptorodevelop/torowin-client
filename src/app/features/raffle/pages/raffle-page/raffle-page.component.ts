@@ -4,7 +4,7 @@ import { RaffleService } from '../../../../core/services/raffle.service';
 import { RaffleHeroComponent } from '../../components/raffle-hero/raffle-hero';
 import { RandomGeneratorComponent } from '../../components/random-generator/random-generator';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RealtimeService } from '../../../../core/services/realtime.service';
 import { ViewChild } from '@angular/core';
 
@@ -88,7 +88,8 @@ setRandomMode() {
 
   constructor(
   private readonly raffleService: RaffleService,
-  private readonly route: ActivatedRoute
+  private readonly route: ActivatedRoute,
+  private readonly router: Router
 ) {}
 
   ngOnInit(): void {
@@ -185,6 +186,7 @@ toggleTicket(ticket: any) {
   console.log('ORDER RESPONSE →', orderRes);
 
   const wompiWidget = orderRes.data.wompi_widget;
+  const orderId = orderRes.data.id || orderRes.data.order_id || orderRes.data.wompi_widget?.reference;
 
   this.isModalOpen = false;
 
@@ -205,8 +207,18 @@ toggleTicket(ticket: any) {
       this.selectedTickets.clear();
       this.form.reset();
       this.loadTickets();
-      this.isProcessing = false;
+
+      if (orderId) {
+        this.router.navigate(['/pago/resultado'], { queryParams: { ref: orderId } });
+      } else {
+        console.warn("No se encontró el ID de la orden para redirigir");
+      }
     });
+
+    // Desbloqueamos el botón inmediatamente después de abrir el widget.
+    // El widget se abre en una capa superior (modal), así que el usuario no puede
+    // hacer doble clic, pero si la cierra manualmente sin pagar, el form estará libre.
+    this.isProcessing = false;
   } else {
     console.error("Falta la configuración de Wompi Widget en la respuesta");
     alert("No se pudo iniciar el pago, configuración faltante.");
