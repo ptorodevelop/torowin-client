@@ -31,7 +31,7 @@ export class RealtimeService {
         wsPort,
         wssPort,
         forceTLS,
-        enabledTransports: forceTLS ? ['wss'] : ['ws'],
+        enabledTransports: ['ws', 'wss'],
       });
 
       console.log('[Reverb] Echo creado', this.echo);
