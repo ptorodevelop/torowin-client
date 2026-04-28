@@ -28,6 +28,13 @@ jobs:
             production: true,
             apiUrl: '${{ secrets.API_URL }}',
             wsUrl: '${{ secrets.WS_URL }}',
+            reverb: {
+              key: '${{ secrets.REVERB_KEY }}',
+              wsHost: '${{ secrets.REVERB_HOST }}',
+              wsPort: 443,
+              wssPort: 443,
+              forceTLS: true,
+            },
           };
           EOF
 
