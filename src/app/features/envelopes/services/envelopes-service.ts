@@ -11,6 +11,7 @@ import { Landing } from '../models/landing'
 export class EnvelopesService {
 
   private readonly api = `${environment.apiUrl}/sobre-fortuna-digital`
+  hasSeenCollections = false;
 
   constructor(private readonly http: HttpClient) {}
 

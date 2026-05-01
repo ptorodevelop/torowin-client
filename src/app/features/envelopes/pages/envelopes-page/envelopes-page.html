@@ -1,95 +1,99 @@
 <section id="inicio" class="hero-gradient pt-20 pb-32 px-6" *ngIf="landing">
 
-<div class="max-w-4xl mx-auto text-center">
+  <div class="max-w-4xl mx-auto text-center">
 
-<div class="inline-flex items-center gap-2 bg-white border border-slate-200 px-4 py-2 rounded-full mb-8 shadow-sm floating-badge">
+    <div
+      class="inline-flex items-center gap-2 bg-white border border-slate-200 px-4 py-2 rounded-full mb-8 shadow-sm floating-badge">
 
-<span class="flex h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
+      <span class="flex h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
 
-<span class="text-[11px] font-black uppercase tracking-widest text-slate-600">
-{{ landing.badge_text }}
-</span>
+      <span class="text-[11px] font-black uppercase tracking-widest text-slate-600">
+        {{ landing.badge_text }}
+      </span>
 
 
-</div>
+    </div>
 
-<h1 class="text-5xl md:text-7xl font-black text-slate-900 leading-[1.1] mb-8 tracking-tighter">
-{{ landing.hero_title }}
-</h1>
+    <h1 class="text-5xl md:text-7xl font-black text-slate-900 leading-[1.1] mb-8 tracking-tighter">
+      {{ landing.hero_title }}
+    </h1>
 
-<p class="text-lg text-slate-500 max-w-2xl mx-auto mb-12 leading-relaxed font-light">
-{{ landing.hero_description }}
-</p>
+    <p class="text-lg text-slate-500 max-w-2xl mx-auto mb-12 leading-relaxed font-light">
+      {{ landing.hero_description }}
+    </p>
 
-<a
-(click)="showEnvelopes()"
-class="bg-indigo-600 text-white px-10 py-5 rounded-2xl font-black text-lg hover:bg-indigo-700 transition-all shadow-2xl shadow-indigo-300/40 inline-block active:scale-95">
+    <a (click)="showEnvelopes()"
+      class="bg-indigo-600 text-white px-10 py-5 rounded-2xl font-black text-lg hover:bg-indigo-700 transition-all shadow-2xl shadow-indigo-300/40 inline-block active:scale-95">
 
-{{ landing.hero_button_text }}
+      {{ landing.hero_button_text }}
 
-</a>
+    </a>
 
-</div>
+  </div>
 
 </section>
 
 <section id="colecciones" *ngIf="showCollections" class="py-24 px-6">
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
 
-  <div
-  *ngFor="let pack of envelopes"
-  (click)="selectEnvelope(pack)"
-  tabindex="0"
-  class="envelope-card group shadow-2xl cursor-pointer"
-  [ngClass]="getGradientClass(pack.color)"
-  >
+    <div *ngFor="let pack of envelopes" (click)="selectEnvelope(pack)" tabindex="0"
+      class="envelope-card group shadow-2xl cursor-pointer" [ngClass]="getGradientClass(pack.color)">
 
 
-<div class="p-10">
+      <div class="p-10">
 
-<div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mb-8">
+        <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mb-8">
 
-<i class="fa-solid {{pack.icon}} text-white text-3xl"></i>
+          <i class="fa-solid {{pack.icon}} text-white text-3xl"></i>
 
-</div>
+        </div>
 
-<h3 class="text-white text-4xl font-black mb-4 tracking-tighter">
-{{pack.name}}
-</h3>
+        <h3 class="text-white text-4xl font-black mb-4 tracking-tighter">
+          {{pack.name}}
+        </h3>
 
-<ul class="text-white/70 text-base mb-12 font-medium leading-snug">
+        <ul class="text-white/70 text-base mb-12 font-medium leading-snug">
 
-<li *ngFor="let benefit of pack.benefits">
+          <li *ngFor="let benefit of pack.benefits">
 
-<i class="fa-solid fa-circle-check mr-2"></i>
+            <i class="fa-solid fa-circle-check mr-2"></i>
 
-{{benefit}}
+            {{benefit}}
 
-</li>
+          </li>
 
-</ul>
+        </ul>
 
-<div class="flex justify-between items-center">
+        <div class="flex justify-between items-center">
 
-<span class="text-white text-2xl font-black">
+          <div class="flex flex-col">
+            <span class="text-white text-3xl font-black leading-none tracking-tight">
+              $ {{ getTotalPrice(pack) | number }}
+            </span>
+            <span class="text-white/70 text-[10px] font-bold uppercase tracking-wider mt-1">
+              ($ {{ pack.price | number }} c/u)
+            </span>
+          </div>
 
-$ {{pack.price}}
+          <div class="flex flex-col items-end gap-2.5">
+            <div class="inline-flex items-center gap-1.5 bg-white/15 backdrop-blur-md border border-white/20 rounded-full px-3 py-1 shadow-inner">
+              <i class="fa-solid fa-ticket-simple text-white/90 text-[10px]"></i>
+              <span class="text-white text-[10px] font-black uppercase tracking-wider">
+                Mín. {{pack.min_tickets}} Boletas
+              </span>
+            </div>
+            <span class="text-white font-bold text-xs uppercase flex items-center gap-1.5 group-hover:translate-x-2 transition-transform duration-300">
+              Seleccionar <i class="fa-solid fa-arrow-right-long"></i>
+            </span>
+          </div>
 
-</span>
+        </div>
 
-<span class="text-white font-bold text-xs uppercase">
+      </div>
 
-Seleccionar →
+    </div>
 
-</span>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
+  </div>
 
 </section>

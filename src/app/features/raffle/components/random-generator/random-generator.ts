@@ -1,4 +1,4 @@
-import { Component, inject, Output, signal, EventEmitter, OnInit, Input } from '@angular/core';
+import { Component, inject, Output, signal, EventEmitter, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RaffleService } from '../../../../core/services/raffle.service';
 
@@ -9,29 +9,47 @@ import { RaffleService } from '../../../../core/services/raffle.service';
   templateUrl: './random-generator.html',
   styleUrl: './random-generator.css',
 })
-export class RandomGeneratorComponent implements OnInit {
+export class RandomGeneratorComponent implements OnInit, OnChanges {
 
   private readonly raffleService = inject(RaffleService);
 
   @Output() numbersGenerated = new EventEmitter<number[]>();
 
   @Input() maxNumber = 1;
+  @Input() initialCount = 3;
   digits = 1;
 
   slots = signal<any[]>([]);
   slotCount = signal(3);
 
   ngOnInit() {
-  this.digits = String(this.maxNumber).length;
+    this.digits = String(this.maxNumber).length;
+    this.slotCount.set(this.initialCount);
 
-  const initialSlots = [];
+    const initialSlots = [];
 
-  for (let i = 0; i < this.slotCount(); i++) {
-    initialSlots.push(this.createSlot(i));
+    for (let i = 0; i < this.slotCount(); i++) {
+      initialSlots.push(this.createSlot(i));
+    }
+
+    this.slots.set(initialSlots);
   }
 
-  this.slots.set(initialSlots);
-}
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['initialCount'] && !changes['initialCount'].firstChange) {
+      this.slotCount.set(this.initialCount);
+      const current = this.slots();
+      if (this.initialCount > current.length) {
+        const newSlots = [...current];
+        for (let i = current.length; i < this.initialCount; i++) {
+          newSlots.push(this.createSlot(i));
+        }
+        this.slots.set(newSlots);
+      } else {
+        this.slots.set(current.slice(0, this.initialCount));
+      }
+    }
+  }
 
   formatNumber(num: number): string {
     return num.toString().padStart(this.digits, '0');
@@ -76,9 +94,14 @@ export class RandomGeneratorComponent implements OnInit {
   this.slots.set(fake);
 
   this.raffleService.generateRandomTickets(unlocked.length)
-    .subscribe(res => {
+    .subscribe({
+      next: res => {
 
-      if (!res.status) return;
+      if (!res.status) {
+        alert(res.message || 'No se pudieron generar los números. La rifa podría estar cerrada.');
+        this.slots.set(this.slots().map(s => s.locked ? s : this.createSlot(s.id)));
+        return;
+      }
 
       const tickets = res.data.tickets;
 
@@ -129,7 +152,12 @@ export class RandomGeneratorComponent implements OnInit {
         });
       });
 
-    });
+    },
+    error: err => {
+      alert('Error conectando con el servidor.');
+      this.slots.set(this.slots().map(s => s.locked ? s : this.createSlot(s.id)));
+    }
+  });
   }
 
   toggleLock(id: number) {

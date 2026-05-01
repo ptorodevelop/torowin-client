@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { EnvelopesService } from '../../services/envelopes-service';
 import { Envelope } from '../../models/envelope';
@@ -21,10 +21,12 @@ export class EnvelopesPage implements OnInit {
 
   constructor(
     private readonly router: Router,
-    private readonly envelopesService: EnvelopesService
+    private readonly envelopesService: EnvelopesService,
+    private readonly cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.showCollections = this.envelopesService.hasSeenCollections;
 
     this.loadLanding()
 
@@ -35,7 +37,10 @@ export class EnvelopesPage implements OnInit {
   loadLanding(): void {
 
     this.envelopesService.getLanding().subscribe({
-      next: (data: Landing) => this.landing = data,
+      next: (data: Landing) => {
+        this.landing = data;
+        this.cdr.detectChanges();
+      },
       error: (err: Error) => console.error(err)
     })
 
@@ -44,7 +49,10 @@ export class EnvelopesPage implements OnInit {
   loadEnvelopes(): void {
 
     this.envelopesService.getEnvelopes().subscribe({
-      next: (data: Envelope[]) => this.envelopes = data,
+      next: (data: Envelope[]) => {
+        this.envelopes = data;
+        this.cdr.detectChanges();
+      },
       error: (err: Error) => console.error(err)
     })
 
@@ -52,9 +60,11 @@ export class EnvelopesPage implements OnInit {
 
 
   selectEnvelope(pack: Envelope) {
-
     this.router.navigate(['/sobre', pack.id]);
+  }
 
+  getTotalPrice(pack: Envelope): number {
+    return Number(pack.price) * pack.min_tickets;
   }
 
 
@@ -82,6 +92,7 @@ getGradientClass(color: string): string {
 showEnvelopes(): void {
 
   this.showCollections = true;
+  this.envelopesService.hasSeenCollections = true;
 
   setTimeout(() => {
     document.getElementById('colecciones')?.scrollIntoView({
