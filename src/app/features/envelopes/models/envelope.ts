@@ -6,4 +6,5 @@ export interface Envelope {
   color: string
   price: string
   benefits: string[]
+  min_tickets: number
 }

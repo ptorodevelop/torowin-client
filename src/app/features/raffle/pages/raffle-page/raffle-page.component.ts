@@ -2,6 +2,8 @@ import { Component, OnInit, inject, signal, effect, computed } from '@angular/co
 import { CommonModule } from '@angular/common';
 import { RaffleService } from '../../../../core/services/raffle.service';
 import { RaffleHeroComponent } from '../../components/raffle-hero/raffle-hero';
+import { EnvelopesService } from '../../../envelopes/services/envelopes-service';
+import { Envelope } from '../../../envelopes/models/envelope';
 import { RandomGeneratorComponent } from '../../components/random-generator/random-generator';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -18,6 +20,10 @@ import { ViewChild } from '@angular/core';
 export class RafflePageComponent implements OnInit {
 
   selectedEnvelopeId = signal<number | null>(null);
+  selectedEnvelope = signal<Envelope | null>(null);
+  minTickets = computed(() => this.selectedEnvelope()?.min_tickets ?? 1);
+  selectedTicketsCount = signal(0);
+  isSelectionValid = computed(() => this.selectedTicketsCount() >= this.minTickets());
 
   private readonly realtime = inject(RealtimeService);
   tickets = signal<any[]>([]);
@@ -40,11 +46,13 @@ export class RafflePageComponent implements OnInit {
   setManualMode() {
   this.mode.set('manual');
   this.selectedTickets.clear();
+  this.selectedTicketsCount.set(0);
 }
 
 setRandomMode() {
   this.mode.set('random');
   this.selectedTickets.clear();
+  this.selectedTicketsCount.set(0);
 }
 
  form = this.fb.group({
@@ -88,18 +96,19 @@ setRandomMode() {
 
   constructor(
   private readonly raffleService: RaffleService,
+  private readonly envelopesService: EnvelopesService,
   private readonly route: ActivatedRoute,
   private readonly router: Router
 ) {}
 
   ngOnInit(): void {
-  const envelopeId = this.route.snapshot.paramMap.get('id');
-  this.selectedEnvelopeId.set(Number(envelopeId));
-
   this.route.paramMap.subscribe(params => {
     const id = params.get('id');
     if (id) {
+      this.selectedEnvelopeId.set(Number(id));
+      this.raffleId = +id;
       this.loadTickets();
+      this.loadEnvelope(Number(id));
     }
   });
 }
@@ -116,6 +125,7 @@ toggleTicket(ticket: any) {
   } else {
     this.selectedTickets.set(num, ticket);
   }
+  this.selectedTicketsCount.set(this.selectedTickets.size);
 }
 
   loadTickets(): void {
@@ -199,6 +209,7 @@ toggleTicket(ticket: any) {
       // El webhook lo confirmará
 
       this.selectedTickets.clear();
+      this.selectedTicketsCount.set(0);
       this.form.reset();
       this.loadTickets();
 
@@ -309,6 +320,7 @@ private handleReserved(event: any) {
   // 🔹 modo manual
   if (this.selectedTickets.has(num)) {
     this.selectedTickets.delete(num);
+    this.selectedTicketsCount.set(this.selectedTickets.size);
     wasSelected = true;
   }
 
@@ -384,7 +396,26 @@ handleRandomSelection(numbers: number[]) {
     }
 
   });
+  this.selectedTicketsCount.set(this.selectedTickets.size);
 }
+
+  loadEnvelope(id: number) {
+    this.envelopesService.getEnvelopes().subscribe({
+      next: (envelopes) => {
+        const env = envelopes.find(e => Number(e.id) === Number(id));
+        if (env) {
+          this.selectedEnvelope.set(env);
+        } else if (envelopes.length > 0) {
+          // Si el ID no existe, lo enviamos al primer sobre disponible (por defecto)
+          // Usamos replaceUrl para que el ID falso no quede en su historial de navegación
+          this.router.navigate(['/sobre', envelopes[0].id], { replaceUrl: true });
+        } else {
+          // Si no hay ningún sobre en todo el sistema, lo enviamos al inicio
+          this.router.navigate(['/']);
+        }
+      }
+    });
+  }
 
 
 }
