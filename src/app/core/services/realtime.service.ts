@@ -2,6 +2,7 @@ import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -19,14 +20,21 @@ export class RealtimeService {
 
       (window as any).Pusher = Pusher;
 
+      const { key, wsHost, wsPort, wssPort, forceTLS } = environment.reverb;
+
+      console.log('[Reverb] Inicializando Echo', { key, wsHost, wsPort, forceTLS });
+
       this.echo = new Echo<'reverb'>({
         broadcaster: 'reverb',
-        key: 'h9hnobtiaemj9hwdbh4v',
-        wsHost: 'localhost',
-        wsPort: 8080,
-        forceTLS: false,
-        enabledTransports: ['ws'],
+        key,
+        wsHost,
+        wsPort,
+        wssPort,
+        forceTLS,
+        enabledTransports: ['ws', 'wss'],
       });
+
+      console.log('[Reverb] Echo creado', this.echo);
 
     }
   }
