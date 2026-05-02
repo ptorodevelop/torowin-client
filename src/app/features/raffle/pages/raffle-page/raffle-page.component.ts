@@ -179,11 +179,19 @@ toggleTicket(ticket: any) {
 
     next: (reserveRes: any) => {
       const reservationToken = reserveRes.data.reservation_token;
-      this.raffleService.createOrder({
+      
+      const payload: any = {
         reservation_token: reservationToken,
         envelope_id: this.selectedEnvelopeId(),
         buyer: this.form.value
-      }).subscribe({
+      };
+
+      const partnerCode = localStorage.getItem('partner_code');
+      if (partnerCode) {
+        payload.partner_code = partnerCode;
+      }
+
+      this.raffleService.createOrder(payload).subscribe({
 
         next: (orderRes: any) => {
 
