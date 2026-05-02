@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { EnvelopesService } from '../../services/envelopes-service';
 import { Envelope } from '../../models/envelope';
 import { Landing } from '../../models/landing';
@@ -21,11 +21,19 @@ export class EnvelopesPage implements OnInit {
 
   constructor(
     private readonly router: Router,
+    private readonly route: ActivatedRoute,
     private readonly envelopesService: EnvelopesService,
     private readonly cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      const ref = params['ref'];
+      if (ref) {
+        localStorage.setItem('partner_code', ref);
+      }
+    });
+
     this.showCollections = this.envelopesService.hasSeenCollections;
 
     this.loadLanding()
