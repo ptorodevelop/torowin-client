@@ -1,7 +1,10 @@
 <!-- NAVBAR -->
 <nav class="bg-white shadow-sm border-b sticky top-0 z-50">
   <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-    <span class="font-black text-xl">Sobre de Fortuna <span class="text-blue-600">Digital</span></span>
+    <div class="flex items-center gap-2">
+      <img src="logo.png" alt="Logo Sobre Digital" class="h-10 w-auto rounded-lg shadow-sm">
+      <span class="font-black text-xl hidden sm:block">Sobre <span class="text-blue-600">Digital</span></span>
+    </div>
     <span class="text-xs text-green-600 font-bold">Compra de sobres en vivo</span>
   </div>
 </nav>
@@ -67,7 +70,7 @@
     <div class="flex flex-col md:flex-row justify-between items-center gap-4">
       <div class="relative w-full md:w-96">
         <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-        <input type="text" placeholder="¿Buscas un número especial? Ej: 07"
+        <input type="text" placeholder="¿Buscas un sobre especial? Ej: 07"
           class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
           [value]="searchTerm()" (input)="onSearch($event)" />
       </div>
@@ -112,7 +115,7 @@
       <!-- seleccionados -->
       <div class="flex-1 w-full">
         <p class="text-[10px] text-slate-400 uppercase font-black tracking-[0.2em] mb-3">
-          Números seleccionados:
+          Sobres seleccionados:
         </p>
 
         <div class="flex gap-2 flex-wrap max-h-16 overflow-y-auto">
@@ -130,7 +133,7 @@
         @if (!isSelectionValid()) {
         <div class="text-right">
           <span class="text-xs text-amber-600 font-bold block uppercase mb-1">
-            Faltan {{ minTickets() - selectedTickets.size }} boletas
+            Faltan {{ minTickets() - selectedTickets.size }} sobres
           </span>
           <span class="text-[10px] text-amber-500 font-medium italic">
             Mínimo para este sobre: {{ minTickets() }}
@@ -177,7 +180,7 @@
           Finalizar Reserva
         </h2>
         <p class="text-sm text-slate-500 italic">
-          Ingresa tus datos para confirmar tus números.
+          Ingresa tus datos para confirmar tus sobres.
         </p>
       </div>
 
@@ -262,7 +265,7 @@
               Resumen
             </span>
             <span class="text-xs font-black text-blue-600 bg-white px-2 py-1 rounded-md">
-              {{ selectedTickets.size }} Cupos
+              {{ selectedTickets.size }} Sobres
             </span>
           </div>
 
