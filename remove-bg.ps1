@@ -6,11 +6,13 @@ $img = [System.Drawing.Image]::FromFile($imgPath)
 $bmp = New-Object System.Drawing.Bitmap($img)
 $img.Dispose()
 
-# We make pure white and near-white transparent
+# We make pure white and near-white transparent (more aggressive threshold)
 for ($x = 0; $x -lt $bmp.Width; $x++) {
     for ($y = 0; $y -lt $bmp.Height; $y++) {
         $pixel = $bmp.GetPixel($x, $y)
-        if ($pixel.R -gt 235 -and $pixel.G -gt 235 -and $pixel.B -gt 235) {
+        # If it's very bright/white-ish, make it transparent
+        # Higher threshold for "brightness"
+        if ($pixel.R -gt 200 -and $pixel.G -gt 200 -and $pixel.B -gt 200) {
             $bmp.SetPixel($x, $y, [System.Drawing.Color]::Transparent)
         }
     }
