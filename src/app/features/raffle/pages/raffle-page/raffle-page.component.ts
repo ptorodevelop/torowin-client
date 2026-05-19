@@ -203,6 +203,12 @@ toggleTicket(ticket: any) {
   this.isModalOpen = false;
 
   if (wompiWidget) {
+    
+    // Configurar redirectUrl para pagos asíncronos (Transferencia Bancolombia, PSE)
+    // Esto asegura que al volver del banco lleguen a la página de resultado.
+    const baseUrl = window.location.origin;
+    wompiWidget.redirectUrl = `${baseUrl}/pago/resultado?ref=${orderId}`;
+
     console.log("Enviando exacto esto a Wompi:", wompiWidget);
     const checkout = new (window as any).WidgetCheckout(wompiWidget);
 
