@@ -56,7 +56,8 @@
 
   @if (mode() === 'random') {
   <app-random-generator [maxNumber]="allTickets().length" [initialCount]="minTickets()"
-    (numbersGenerated)="handleRandomSelection($event)">
+    (numbersGenerated)="handleRandomSelection($event)"
+    (onError)="handleRandomError($event)">
   </app-random-generator>
   }
 
@@ -67,7 +68,7 @@
     <div class="flex flex-col md:flex-row justify-between items-center gap-4">
       <div class="relative w-full md:w-96">
         <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-        <input type="text" placeholder="¿Buscas un sobre especial? Ej: 07"
+        <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="¿Buscas un sobre especial? Ej: 07"
           class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
           [value]="searchTerm()" (input)="onSearch($event)" />
       </div>

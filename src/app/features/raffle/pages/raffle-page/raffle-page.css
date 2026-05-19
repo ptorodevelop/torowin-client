@@ -13,7 +13,7 @@
   font-size: 0.875rem;
 }
 
-.ticket:hover:not(.reserved) {
+.ticket:hover:not(.reserved):not(.selected) {
   transform: scale(1.05);
   border-color: #2563eb;
   color: #2563eb;
@@ -22,6 +22,13 @@
 .ticket.selected {
   background-color: #2563eb;
   border-color: #1e40af;
+  color: white;
+}
+
+.ticket.selected:hover {
+  transform: scale(1.05);
+  background-color: #1d4ed8; /* un azul un poco más oscuro */
+  border-color: #1e3a8a;
   color: white;
 }
 
