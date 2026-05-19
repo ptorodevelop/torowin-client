@@ -160,7 +160,18 @@ export class RandomGeneratorComponent implements OnInit, OnChanges {
   });
   }
 
+  @Output() onError = new EventEmitter<string>();
+
   toggleLock(id: number) {
+    const slot = this.slots().find(s => s.id === id);
+    if (!slot) return;
+
+    const currentNumber = Number(slot.sequence[slot.sequence.length - 1]);
+    if (currentNumber === 0) {
+      this.onError.emit('¡Gira la fortuna primero para obtener un número!');
+      return; 
+    }
+
     const updated = this.slots().map(s =>
       s.id === id ? { ...s, locked: !s.locked } : s
     );
@@ -180,7 +191,12 @@ export class RandomGeneratorComponent implements OnInit, OnChanges {
 
   changeCount(delta: number) {
     let count = this.slotCount() + delta;
-    count = Math.max(1, Math.min(8, count));
+    
+    const lockedCount = this.slots().filter(s => s.locked).length;
+    const minAllowed = Math.max(this.initialCount, lockedCount, 1);
+    const maxAllowed = Math.max(minAllowed + 10, 30); // Permitir suficientes slots
+
+    count = Math.max(minAllowed, Math.min(maxAllowed, count));
 
     this.slotCount.set(count);
 
@@ -192,8 +208,9 @@ export class RandomGeneratorComponent implements OnInit, OnChanges {
         newSlots.push(this.createSlot(i));
       }
       this.slots.set(newSlots);
-    } else {
+    } else if (count < current.length) {
       this.slots.set(current.slice(0, count));
+      this.emitSelected();
     }
   }
 

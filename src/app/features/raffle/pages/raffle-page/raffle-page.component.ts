@@ -276,9 +276,15 @@ toggleTicket(ticket: any) {
   }
 
   onSearch(event: Event) {
-  const value = (event.target as HTMLInputElement).value;
-  this.searchTerm.set(value);
-}
+    const input = event.target as HTMLInputElement;
+    const sanitizedValue = input.value.replace(/\D/g, '');
+    
+    if (input.value !== sanitizedValue) {
+      input.value = sanitizedValue;
+    }
+    
+    this.searchTerm.set(sanitizedValue);
+  }
 
 filteredTickets = computed(() => {
 
@@ -405,6 +411,13 @@ handleRandomSelection(numbers: number[]) {
 
   });
   this.selectedTicketsCount.set(this.selectedTickets.size);
+}
+
+handleRandomError(msg: string) {
+  this.notification.set(msg);
+  setTimeout(() => {
+    this.notification.set(null);
+  }, 4000);
 }
 
   loadEnvelope(id: number) {
